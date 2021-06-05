@@ -1,0 +1,26 @@
+{
+    "name": "projet-lo10-smartfeed",
+    "version": "1.0.0",
+    "description": "Projet LO10",
+    "main": "index.js",
+    "scripts": {
+        "dev": "nodemon index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/EdgarHnd/Projet-LO10-SmartFeed.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/EdgarHnd/Projet-LO10-SmartFeed/issues"
+    },
+    "homepage": "https://github.com/EdgarHnd/Projet-LO10-SmartFeed#readme",
+    "dependencies": {
+        "express": "^4.17.1"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.7"
+    }
+}
