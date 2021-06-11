@@ -7,23 +7,38 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
-app.get("/reddit/posts/", (req, res) => {
-    fetch('https://www.reddit.com/r/' + req.query.sub + '/hot.json')
-        .then(res => res.json())
-        .then(json => {
-            var posts = {sub: json["data"]["children"][0]["data"]["subreddit_name_prefixed"]};
-            var i = 0;
-            for(let post of json["data"]["children"]){
-                let title = post["data"]["title"];
-                let url = post["data"]["url"];
-                let author = "u/".concat(post["data"]["author"]);
-                let thumbnail = post["data"]["thumbnail"];
-                let my_post = {title: title, url: url, author: author, thumbnail: thumbnail};
-                posts[i] = my_post;
-                i++;
+//séparer les subreddit par des virgule dans le paramètre sub dans la requete GET
+app.get("/reddit/posts", (req, res) => {
+    //méthod async afin d'utiliser await pour le fetch
+    (async() => {
+        try{
+            my_json = {media : "reddit", subscribe: []};
+            let subs = req.query.sub;
+            arr_subs = subs.split(',');
+
+            for (let sub of arr_subs){
+                var posts = [];
+
+                var request = await fetch('https://www.reddit.com/r/' + sub + '/hot.json').then(response => response.json());
+                var sub_name = request["data"]["children"][0]["data"]["subreddit_name_prefixed"];
+
+                for(let post of request["data"]["children"]){
+                    let content = post["data"]["title"];
+                    let url = post["data"]["url"];
+                    let author = "u/".concat(post["data"]["author"]);
+                    let thumbnail = post["data"]["thumbnail"];
+                    let my_post = {content: content, url: url, author: author, thumbnail: thumbnail};
+
+                    posts.push(my_post);
+                }
+                my_json["subscribe"].push({name: sub_name, posts: posts})
             }
-            res.send(posts);
-        });
+            res.send(my_json);
+        } catch(error) {
+            console.log(error);
+        }
+        
+    })();
 })
 
 app.listen(port, () => {
