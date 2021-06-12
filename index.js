@@ -14,7 +14,7 @@ app.get("/reddit/posts", (req, res) => {
         try {
             my_json = { media: "reddit", subscribe: [] };
             let subs = req.query.sub;
-            arr_suzbs = subs.split(',');
+            arr_subs = subs.split(',');
 
             for (let sub of arr_subs) {
                 var posts = [];
