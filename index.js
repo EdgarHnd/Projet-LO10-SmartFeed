@@ -76,6 +76,45 @@ app.get("/youtube/videos", (req, res) => {
 })
 
 
+app.get("/twitch/streams", (req, res) => {
+    (async() => {
+        try{
+            my_json = {media : "twitch", subscribe: []};
+            let subs = req.query.sub;
+            arr_subs = subs.split(',');
+
+            for (let sub of arr_subs) {
+                var posts = [];
+
+                var request = await fetch('https://api.twitch.tv/kraken/streams/?game=' + sub + '&limit=2&language=fr&client_id=7fs70y1e116f302zot5p170bpqleyz', {
+                  method: 'GET',
+                  headers: {'Accept': 'application/vnd.twitchtv.v5+json',
+                            'Client-ID': '7fs70y1e116f302zot5p170bpqleyz'},
+                }).then(response => response.json());
+
+                var sub_name = request["streams"][0]["game"];
+
+                for(let post of request["streams"]){
+                    let content = post["channel"]["status"];
+                    let url = post["channel"]["url"];
+                    let author = post["channel"]["name"];
+                    let thumbnail = post["preview"]["small"];
+                    let publishTime = post["created_at"]["publishTime"];
+                    let my_post = {content: content, url: url, author: author, thumbnail: thumbnail, publishTime: publishTime};
+
+                    posts.push(my_post);
+                }
+                my_json["subscribe"].push({name: sub_name, posts: posts})
+            }
+            res.send(my_json);
+        } catch(error) {
+            console.log(error);
+        }
+
+    })();
+})
+
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
