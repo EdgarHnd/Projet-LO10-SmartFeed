@@ -3,10 +3,16 @@ const express = require('express')
 const fetch = require('node-fetch');
 const app = express()
 const port = 3000
+const cors = require('cors');
+const path = require('path');
+
+app.use(cors());
+
+app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+});
 
 // séparer les subreddit par des virgule dans le paramètre sub dans la requete GET
 app.get("/reddit/posts", (req, res) => {
@@ -120,8 +126,8 @@ app.get("/twitter/tweets", (req, res) => {
 
 app.get("/twitch/streams", (req, res) => {
     (async() => {
-        try{
-            my_json = {media : "twitch", subscribe: []};
+        try {
+            my_json = { media: "twitch", subscribe: [] };
             let subs = req.query.sub;
             arr_subs = subs.split(',');
 
@@ -129,27 +135,29 @@ app.get("/twitch/streams", (req, res) => {
                 var posts = [];
 
                 var request = await fetch('https://api.twitch.tv/kraken/streams/?game=' + sub + '&limit=2&language=fr&client_id=7fs70y1e116f302zot5p170bpqleyz', {
-                  method: 'GET',
-                  headers: {'Accept': 'application/vnd.twitchtv.v5+json',
-                            'Client-ID': '7fs70y1e116f302zot5p170bpqleyz'},
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/vnd.twitchtv.v5+json',
+                        'Client-ID': '7fs70y1e116f302zot5p170bpqleyz'
+                    },
                 }).then(response => response.json());
 
                 var sub_name = request["streams"][0]["game"];
 
-                for(let post of request["streams"]){
+                for (let post of request["streams"]) {
                     let content = post["channel"]["status"];
                     let url = post["channel"]["url"];
                     let author = post["channel"]["name"];
                     let thumbnail = post["preview"]["small"];
                     let publishTime = post["created_at"]["publishTime"];
-                    let my_post = {content: content, url: url, author: author, thumbnail: thumbnail, publishTime: publishTime};
+                    let my_post = { content: content, url: url, author: author, thumbnail: thumbnail, publishTime: publishTime };
 
                     posts.push(my_post);
                 }
-                my_json["subscribe"].push({name: sub_name, posts: posts})
+                my_json["subscribe"].push({ name: sub_name, posts: posts })
             }
             res.send(my_json);
-        } catch(error) {
+        } catch (error) {
             console.log(error);
         }
 
