@@ -14,33 +14,34 @@ app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 });
 
-var user = {name: "Josh", media_subs:{reddit: ["YUROP","rance"],youtube: ["UCmCLlnZfSe93AoSGc03l7eA", "UCj1VqrHhDte54oLgPG4xpuQ"], twitter: ["teddyriner", "Sardoche_Lol"], twitch: ["Chess"]}}
+var user = { name: "Josh", media_subs: { reddit: ["YUROP", "rance"], youtube: ["UCmCLlnZfSe93AoSGc03l7eA", "UCj1VqrHhDte54oLgPG4xpuQ"], twitter: ["teddyriner", "Sardoche_Lol"], twitch: ["Chess"] } }
 
-app.post('/myfeed', (req, res) => { 
+app.get('/myfeed', (req, res) => {
     (async() => {
-        let my_feed = {feed: []};
-        if(user.media_subs.reddit!= undefined) {
+        let my_feed = { feed: [] };
+        if (user.media_subs.reddit != undefined) {
             let reddit_subs = user.media_subs.reddit.join(',')
             my_feed.feed.push(await getRedditPosts(reddit_subs))
         }
-        if(user.media_subs.youtube!= undefined) {
-            let youtube_subs = user.media_subs.youtube.join(',')
-            my_feed.feed.push(await getYoutubeVideos(youtube_subs))
-        }
-        if(user.media_subs.twitter!= undefined) {
-            let twitter_subs = user.media_subs.twitter.join(',')
-            my_feed.feed.push(await getTwitterTweets(twitter_subs))
-        }
-        if(user.media_subs.twitch!= undefined) {
-            let twitch_subs = user.media_subs.twitch.join(',')
-            my_feed.feed.push(await getTwitchStreams(twitch_subs))
-        }
+        /* 
+                if (user.media_subs.youtube != undefined) {
+                    let youtube_subs = user.media_subs.youtube.join(',')
+                    my_feed.feed.push(await getYoutubeVideos(youtube_subs))
+                }
+                if (user.media_subs.twitter != undefined) {
+                    let twitter_subs = user.media_subs.twitter.join(',')
+                    my_feed.feed.push(await getTwitterTweets(twitter_subs))
+                }
+                if (user.media_subs.twitch != undefined) {
+                    let twitch_subs = user.media_subs.twitch.join(',')
+                    my_feed.feed.push(await getTwitchStreams(twitch_subs))
+                } */
         res.send(my_feed);
     })();
 });
 
 
-async function getRedditPosts(subs){
+async function getRedditPosts(subs) {
     try {
         my_json = { media: "reddit", subscribe: [] };
         arr_subs = subs.split(',');
@@ -68,7 +69,7 @@ async function getRedditPosts(subs){
     }
 }
 
-async function getYoutubeVideos(subs){
+async function getYoutubeVideos(subs) {
     try {
         my_json = { media: "youtube", subscribe: [] };
         arr_subs = subs.split(',');
@@ -98,7 +99,7 @@ async function getYoutubeVideos(subs){
 }
 
 
-async function getTwitterTweets(subs){
+async function getTwitterTweets(subs) {
     try {
         my_json = { media: "twitter", subscribe: [] };
         arr_subs = subs.split(',');
@@ -135,36 +136,38 @@ async function getTwitterTweets(subs){
     }
 }
 
-async function getTwitchStreams(subs){
-    try{
-        my_json = {media : "twitch", subscribe: []};
+async function getTwitchStreams(subs) {
+    try {
+        my_json = { media: "twitch", subscribe: [] };
         arr_subs = subs.split(',');
 
         for (let sub of arr_subs) {
             var posts = [];
 
             var request = await fetch('https://api.twitch.tv/kraken/streams/?game=' + sub + '&limit=2&language=fr&client_id=' + process.env.TWITCH_BEARER_TOKEN, {
-              method: 'GET',
-              headers: {'Accept': 'application/vnd.twitchtv.v5+json',
-                        'Client-ID': '7fs70y1e116f302zot5p170bpqleyz'},
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.twitchtv.v5+json',
+                    'Client-ID': '7fs70y1e116f302zot5p170bpqleyz'
+                },
             }).then(response => response.json());
 
             var sub_name = request["streams"][0]["game"];
 
-            for(let post of request["streams"]){
+            for (let post of request["streams"]) {
                 let content = post["channel"]["status"];
                 let url = post["channel"]["url"];
                 let author = post["channel"]["name"];
                 let thumbnail = post["preview"]["small"];
                 let publishTime = post["created_at"]["publishTime"];
-                let my_post = {content: content, url: url, author: author, thumbnail: thumbnail, publishTime: publishTime};
+                let my_post = { content: content, url: url, author: author, thumbnail: thumbnail, publishTime: publishTime };
 
                 posts.push(my_post);
             }
-            my_json["subscribe"].push({name: sub_name, posts: posts})
+            my_json["subscribe"].push({ name: sub_name, posts: posts })
         }
         return my_json;
-    } catch(error) {
+    } catch (error) {
         console.log(error);
     }
 }

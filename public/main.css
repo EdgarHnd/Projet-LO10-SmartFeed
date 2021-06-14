@@ -1,4 +1,8 @@
 @import url('https://api.fontshare.com/css?f[]=satoshi@400,900&display=swap" rel="stylesheet');
+html {
+    overflow-y: scroll;
+}
+
 body {
     display: flex;
     overflow: hidden;
@@ -8,6 +12,10 @@ body {
 
 .header {
     display: flex;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #fff;
 }
 
 h1 {
@@ -20,8 +28,8 @@ h1 {
 }
 
 .center {
+    margin-top: 6rem;
     display: flex;
-    margin: 2rem;
     align-items: center;
     justify-content: center;
 }
@@ -32,11 +40,12 @@ h1 {
     justify-content: space-around;
     border-left: 1px solid;
     border-right: 1px solid;
+    max-width: 80%;
 }
 
 .feeds span {
-    margin-left: 1rem;
-    margin-right: 1rem;
+    margin-left: 2rem;
+    margin-right: 2rem;
     font-family: 'Satoshi', sans-serif;
     font-size: 2rem;
     font-weight: 400;
@@ -69,10 +78,29 @@ h1 {
 
 .post {
     display: flex;
+    flex-direction: row;
     padding-top: 1rem;
+}
+
+img {
+    display: flex;
+    max-width: 4rem;
+}
+
+.content {
+    display: flex;
+    margin-left: 2rem;
     font-family: 'Satoshi', sans-serif;
     font-size: 1rem;
     font-weight: 400;
+}
+
+.author {
+    display: flex;
+    margin-left: 2rem;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 1rem;
+    font-weight: 900;
 }
 
 .footer {
