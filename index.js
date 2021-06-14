@@ -3,10 +3,16 @@ const express = require('express')
 const fetch = require('node-fetch');
 const app = express()
 const port = 3000
+const cors = require('cors');
+const path = require('path');
+
+app.use(cors());
+
+app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+});
 
 var user = {name: "Josh", media_subs:{reddit: ["YUROP","rance"],youtube: ["UCmCLlnZfSe93AoSGc03l7eA", "UCj1VqrHhDte54oLgPG4xpuQ"], twitter: ["teddyriner", "Sardoche_Lol"], twitch: ["Chess"]}}
 

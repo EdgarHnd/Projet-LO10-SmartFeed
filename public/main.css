@@ -1,0 +1,80 @@
+@import url('https://api.fontshare.com/css?f[]=satoshi@400,900&display=swap" rel="stylesheet');
+body {
+    display: flex;
+    overflow: hidden;
+    margin: 0px;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+}
+
+h1 {
+    display: flex;
+    margin: 0;
+    margin-left: 2rem;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 4rem;
+    font-weight: 900;
+}
+
+.center {
+    display: flex;
+    margin: 2rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.feeds {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    border-left: 1px solid;
+    border-right: 1px solid;
+}
+
+.feeds span {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 2rem;
+    font-weight: 400;
+}
+
+.feed {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 1rem;
+}
+
+.sub {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid;
+    padding: 1rem;
+    margin: 1rem;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+.posts {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-top: 1rem;
+}
+
+.post {
+    display: flex;
+    padding-top: 1rem;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.footer {
+    display: flex;
+}
