@@ -54,7 +54,7 @@ async function getRedditPosts(subs) {
 
             for (let post of request["data"]["children"]) {
                 let content = post["data"]["title"];
-                let url = post["data"]["url"];
+                let url = "https://reddit.com" + post["data"]["permalink"];
                 let author = "u/".concat(post["data"]["author"]);
                 let thumbnail = post["data"]["thumbnail"];
                 let my_post = { content: content, url: url, author: author, thumbnail: thumbnail };
