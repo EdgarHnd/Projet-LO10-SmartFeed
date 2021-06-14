@@ -10,6 +10,14 @@ body {
     flex-direction: column;
 }
 
+a,
+a:hover,
+a:focus,
+a:active {
+    text-decoration: none;
+    color: inherit;
+}
+
 .header {
     display: flex;
     position: fixed;
@@ -80,6 +88,8 @@ h1 {
     display: flex;
     flex-direction: row;
     padding-top: 1rem;
+    max-width: 30rem;
+    justify-content: space-between;
 }
 
 img {
@@ -99,8 +109,8 @@ img {
     display: flex;
     margin-left: 2rem;
     font-family: 'Satoshi', sans-serif;
-    font-size: 1rem;
-    font-weight: 900;
+    font-size: 0.8rem;
+    font-weight: 400;
 }
 
 .footer {

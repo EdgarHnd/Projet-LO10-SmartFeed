@@ -1,34 +1,35 @@
-var subs = [{}];
+var feeds;
 
-async function getRedditContent() {
+async function getFeed() {
     await $.ajax({
         url: "/myfeed",
         success: function(result) {
-            console.log(result);
-            result.feed[0].subscribe.forEach(element => {
-                subs.push({ sub: element.name, posts: [{ content: element.posts[2].content, thumbnail: element.posts[2].thumbnail }, { content: element.posts[1].content, thumbnail: element.posts[0].thumbnail }] })
-            })
+            console.log(result.feed);
+            feeds = result.feed;
         }
     });
 }
 
-getRedditContent().then(() => {
-    console.log(subs);
-    subs.forEach(e => {
-        if (e.sub != null) {
+getFeed().then(() => {
+    console.log(feeds[0].subscribe);
+    feeds[0].subscribe.forEach(e => {
+        console.log(e);
+        if (e.name != null) {
             sub = document.createElement('div');
             $(sub).addClass("sub")
-                .html(e.sub)
+                .html(e.name)
                 .appendTo($('#reddit'))
             posts = document.createElement('div');
             $(posts).addClass("posts")
                 .appendTo($(sub))
             if ($(e.posts).length) {
-                e.posts.forEach(e => {
+                e.posts.slice(0, 3).forEach(e => {
+                    link = document.createElement('a');
+                    $(link).attr('href', e.url)
+                        .appendTo(posts);
                     post = document.createElement('div');
                     $(post).addClass("post")
-                        .appendTo($(posts));
-                    content = document.createElement('div');
+                        .appendTo($(link));
                     img = $('<img id="dynamic">');
                     if (e.thumbnail.startsWith('http')) {
                         $(img).attr('src', e.thumbnail)
@@ -37,8 +38,13 @@ getRedditContent().then(() => {
                         $(img).attr('src', 'https://cdn.worldvectorlogo.com/logos/reddit-4.svg')
                             .appendTo($(post));
                     }
+                    content = document.createElement('div');
                     $(content).addClass("content")
-                        .html(e.content)
+                        .html(e.content.slice(0, 100))
+                        .appendTo($(post));
+                    author = document.createElement('div');
+                    $(author).addClass("author")
+                        .html(e.author)
                         .appendTo($(post));
                 })
             }
