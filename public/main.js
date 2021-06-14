@@ -1,5 +1,4 @@
 var subs = [{}];
-var stocks = [];
 
 async function getContent() {
     await $.ajax({
@@ -12,21 +11,24 @@ async function getContent() {
                 subs.push({ sub: element.name, posts: [{ content: element.posts[0].content }, { content: element.posts[1].content }] })
             })
         }
-    }).then(async() => {
-        i = 0;
-        await $("#reddit > .sub").each(function() {
-            $(this).html(subs[i].sub);
-            i++;
-            stocks.push(this);
-        });
     }).then(() => {
-        console.log(stocks);
-        stocks.forEach(element => {
-            j = 0;
-            $(element).children('.element').each(function() {
-                $(this).html('subs[i].posts[j].content')
-                j++
-            })
+        console.log(subs);
+        subs.forEach(e => {
+            sub = document.createElement('div');
+            $(sub).addClass("sub")
+                .html(e.sub)
+                .appendTo($('#reddit'))
+            if ($(e.posts).length) {
+                console.log("Exists!");
+                e.posts.forEach(e => {
+                    post = document.createElement('div');
+                    console.log(e.content);
+                    $(post).addClass("post")
+                        .html(e.content)
+                        .appendTo($(sub))
+                })
+            }
+
         });
     })
 }
