@@ -1,6 +1,6 @@
 var subs = [{}];
 
-async function getContent() {
+async function getRedditContent() {
     await $.ajax({
         url: "/reddit/posts/",
         data: {
@@ -14,23 +14,26 @@ async function getContent() {
     }).then(() => {
         console.log(subs);
         subs.forEach(e => {
-            sub = document.createElement('div');
-            $(sub).addClass("sub")
-                .html(e.sub)
-                .appendTo($('#reddit'))
-            if ($(e.posts).length) {
-                console.log("Exists!");
-                e.posts.forEach(e => {
-                    post = document.createElement('div');
-                    console.log(e.content);
-                    $(post).addClass("post")
-                        .html(e.content)
-                        .appendTo($(sub))
-                })
+            if (e.sub != null) {
+                sub = document.createElement('div');
+                $(sub).addClass("sub")
+                    .html(e.sub)
+                    .appendTo($('#reddit'))
+                posts = document.createElement('div');
+                $(posts).addClass("posts")
+                    .appendTo($(sub))
+                if ($(e.posts).length) {
+                    e.posts.forEach(e => {
+                        post = document.createElement('div');
+                        console.log(e.content);
+                        $(post).addClass("post")
+                            .html(e.content)
+                            .appendTo($(posts))
+                    })
+                }
             }
-
         });
     })
 }
 
-getContent();
+getRedditContent();
