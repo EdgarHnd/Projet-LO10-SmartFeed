@@ -5,6 +5,13 @@ const app = express()
 const port = 3000
 const cors = require('cors');
 const path = require('path');
+const uuidv4 = require('uuid/v4')
+const AWS = require('aws-sdk');
+
+
+
+AWS.config.update( {region: "eu-west-3" });
+var dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 app.use(cors());
 
@@ -13,8 +20,9 @@ app.use(express.static('public'));
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 });
-
-var user = { name: "Josh", media_subs: { reddit: ["YUROP", "rance"], youtube: ["UCmCLlnZfSe93AoSGc03l7eA", "UCj1VqrHhDte54oLgPG4xpuQ"], twitter: ["teddyriner", "Sardoche_Lol"], twitch: ["Chess"] } }
+var user_id = uuidv4();
+var user = { name: "Josh", user_id: user_id, media_subs: { reddit: ["YUROP", "rance"], youtube: ["UCmCLlnZfSe93AoSGc03l7eA", "UCj1VqrHhDte54oLgPG4xpuQ"], twitter: ["teddyriner", "Sardoche_Lol"], twitch: ["Chess"] } }
+putJsonDynamoDB(user);
 
 app.get('/myfeed', (req, res) => {
     (async() => {
@@ -164,11 +172,39 @@ async function getTwitchStreams(subs) {
 
                 posts.push(my_post);
             }
-            my_json["subscribe"].push({ name: sub_name, posts: posts })
+            my_json["subscribe"].push({ name: sub_name, posts: posts });
         }
         return my_json;
     } catch (error) {
         console.log(error);
+    }
+}
+async function putJsonDynamoDB(json){
+    var name = json["name"];
+    var user_id = json["user_id"];
+    for( media in json["media_subs"]){
+     console.log("media" + media);
+     for(var subscribe in json["media_subs"][media]){
+         console.log("subscribe " + subscribe);
+        var params = {
+            TableName: "SmartFeed",
+            Item: {
+                "user_id": user_id,
+                "name": name,
+                "media": media,
+                "sub": json["media_subs"][media][subscribe]
+            }
+        }
+        console.log("params" + JSON.stringify(params));
+
+        dynamoDB.put(params, function(err, data) {
+            if (err) {
+                console.error("Unable to add json", data, ". Error JSON:", JSON.stringify(err, null, 2));
+            } else {
+                console.log("PutItem succeeded:", data);
+            }
+        });
+        }
     }
 }
 
