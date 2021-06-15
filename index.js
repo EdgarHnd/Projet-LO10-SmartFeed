@@ -5,37 +5,88 @@ const app = express()
 const port = 3000
 const cors = require('cors');
 const path = require('path');
+const uuidv4 = require('uuid/v4')
+const AWS = require('aws-sdk');
 
+AWS.config.update( {region: "eu-west-3" });
+var dynamoDB = new AWS.DynamoDB.DocumentClient();
 app.use(cors());
-
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 });
 
-var user = { name: "Josh", media_subs: { reddit: ["YUROP", "rance"], youtube: ["UCmCLlnZfSe93AoSGc03l7eA", "UCj1VqrHhDte54oLgPG4xpuQ"], twitter: ["teddyriner", "Sardoche_Lol"], twitch: ["Chess"] } }
+//si vous voulez ajouter un utilisateur
+/*
+var user_id = uuidv4();
+var user = { name: "Alexandre", user_id: "107320503773562621368", media_subs: { reddit: ["YUROP", "rance"], youtube: ["UCmCLlnZfSe93AoSGc03l7eA", "UCj1VqrHhDte54oLgPG4xpuQ"], twitter: ["teddyriner", "jack"], twitch: ["Chess", "Sports"] } }
+putJsonDynamoDB(user)*/
+
+
+app.get('/user', (req, res) => {
+    (async() => {
+        var params = {
+            TableName: "SmartFeed",
+            KeyConditionExpression : "user_id = :user_id",
+            ExpressionAttributeValues: {
+                ':user_id' : req.query.id
+            }
+        }
+        var result = await dynamoDB.query(params).promise()
+        res.send(JSON.stringify(result))
+    })();
+})
+
+async function putJsonDynamoDB(json){
+    var name = json["name"];
+    var user_id = json["user_id"];
+    for( media in json["media_subs"]){
+     console.log("media" + media);
+     for(var subscribe in json["media_subs"][media]){
+         console.log("subscribe " + subscribe);
+        var params = {
+            TableName: "SmartFeed",
+            Item: {
+                "user_id": user_id,
+                "name": name,
+                "media": media,
+                "sub": json["media_subs"][media][subscribe]
+            }
+        }
+        console.log("params" + JSON.stringify(params));
+
+        dynamoDB.put(params, function(err, data) {
+            if (err) {
+                console.error("Unable to add json", data, ". Error JSON:", JSON.stringify(err, null, 2));
+            } else {
+                console.log("PutItem succeeded:", data);
+            }
+        });
+        }
+    }
+}
 
 app.get('/myfeed', (req, res) => {
     (async() => {
+        let user = req.query.user
         let my_feed = { feed: [] };
         if (user.media_subs.reddit != undefined) {
             let reddit_subs = user.media_subs.reddit.join(',')
             my_feed.feed.push(await getRedditPosts(reddit_subs))
         }
-        /* 
-                if (user.media_subs.youtube != undefined) {
-                    let youtube_subs = user.media_subs.youtube.join(',')
-                    my_feed.feed.push(await getYoutubeVideos(youtube_subs))
-                }
-                if (user.media_subs.twitter != undefined) {
-                    let twitter_subs = user.media_subs.twitter.join(',')
-                    my_feed.feed.push(await getTwitterTweets(twitter_subs))
-                }
-                if (user.media_subs.twitch != undefined) {
-                    let twitch_subs = user.media_subs.twitch.join(',')
-                    my_feed.feed.push(await getTwitchStreams(twitch_subs))
-                } */
+        if (user.media_subs.youtube != undefined) {
+            let youtube_subs = user.media_subs.youtube.join(',')
+            my_feed.feed.push(await getYoutubeVideos(youtube_subs))
+        }
+        if (user.media_subs.twitter != undefined) {
+            let twitter_subs = user.media_subs.twitter.join(',')
+            my_feed.feed.push(await getTwitterTweets(twitter_subs))
+        }
+        if (user.media_subs.twitch != undefined) {
+            let twitch_subs = user.media_subs.twitch.join(',')
+            my_feed.feed.push(await getTwitchStreams(twitch_subs))
+        }
         res.send(my_feed);
     })();
 });
@@ -164,13 +215,14 @@ async function getTwitchStreams(subs) {
 
                 posts.push(my_post);
             }
-            my_json["subscribe"].push({ name: sub_name, posts: posts })
+            my_json["subscribe"].push({ name: sub_name, posts: posts });
         }
         return my_json;
     } catch (error) {
         console.log(error);
     }
 }
+
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
