@@ -8,7 +8,7 @@ const path = require('path');
 const uuidv4 = require('uuid/v4')
 const AWS = require('aws-sdk');
 
-AWS.config.update( {region: "eu-west-3" });
+AWS.config.update({ region: "eu-west-3" });
 var dynamoDB = new AWS.DynamoDB.DocumentClient();
 app.use(cors());
 app.use(express.static('public'));
@@ -18,19 +18,19 @@ app.get('/', (req, res) => {
 });
 
 //si vous voulez ajouter un utilisateur
-/*
+/* 
 var user_id = uuidv4();
-var user = { name: "Alexandre", user_id: "107320503773562621368", media_subs: { reddit: ["YUROP", "rance"], youtube: ["UCmCLlnZfSe93AoSGc03l7eA", "UCj1VqrHhDte54oLgPG4xpuQ"], twitter: ["teddyriner", "jack"], twitch: ["Chess", "Sports"] } }
-putJsonDynamoDB(user)*/
+var user = { name: "Edgar2", user_id: "108751798570749984797", media_subs: { reddit: ["Dogecoin", "Elonmusk"], youtube: ["UCmCLlnZfSe93AoSGc03l7eA", "UCj1VqrHhDte54oLgPG4xpuQ"], twitter: ["elonmusk", "shibtoken"], twitch: ["Chess", "Sports"] } }
+putJsonDynamoDB(user) */
 
 
 app.get('/user', (req, res) => {
     (async() => {
         var params = {
             TableName: "SmartFeed",
-            KeyConditionExpression : "user_id = :user_id",
+            KeyConditionExpression: "user_id = :user_id",
             ExpressionAttributeValues: {
-                ':user_id' : req.query.id
+                ':user_id': req.query.id
             }
         }
         var result = await dynamoDB.query(params).promise()
@@ -38,31 +38,31 @@ app.get('/user', (req, res) => {
     })();
 })
 
-async function putJsonDynamoDB(json){
+async function putJsonDynamoDB(json) {
     var name = json["name"];
     var user_id = json["user_id"];
-    for( media in json["media_subs"]){
-     console.log("media" + media);
-     for(var subscribe in json["media_subs"][media]){
-         console.log("subscribe " + subscribe);
-        var params = {
-            TableName: "SmartFeed",
-            Item: {
-                "user_id": user_id,
-                "name": name,
-                "media": media,
-                "sub": json["media_subs"][media][subscribe]
+    for (media in json["media_subs"]) {
+        console.log("media" + media);
+        for (var subscribe in json["media_subs"][media]) {
+            console.log("subscribe " + subscribe);
+            var params = {
+                TableName: "SmartFeed",
+                Item: {
+                    "user_id": user_id,
+                    "name": name,
+                    "media": media,
+                    "sub": json["media_subs"][media][subscribe]
+                }
             }
-        }
-        console.log("params" + JSON.stringify(params));
+            console.log("params" + JSON.stringify(params));
 
-        dynamoDB.put(params, function(err, data) {
-            if (err) {
-                console.error("Unable to add json", data, ". Error JSON:", JSON.stringify(err, null, 2));
-            } else {
-                console.log("PutItem succeeded:", data);
-            }
-        });
+            dynamoDB.put(params, function(err, data) {
+                if (err) {
+                    console.error("Unable to add json", data, ". Error JSON:", JSON.stringify(err, null, 2));
+                } else {
+                    console.log("PutItem succeeded:", data);
+                }
+            });
         }
     }
 }

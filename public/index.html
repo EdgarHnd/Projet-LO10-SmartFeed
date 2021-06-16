@@ -16,8 +16,9 @@
 <body>
     <div class="header">
         <h1>Smart Feed</h1>
-        <div class="g-signin2" data-onsuccess="onSignIn"></div>
-        <a href="#" onclick="signOut();">Sign out</a>
+        <div class="login">
+            <div class="g-signin2" data-onsuccess="onSignIn"></div>
+            <a class="signout" href="#" onclick="signOut();">Sign out</a></div>
     </div>
     <div class="center">
         <div class="feeds">
@@ -38,12 +39,12 @@
     <script src="main.js"></script>
     <script>
         function signOut() {
-          var auth2 = gapi.auth2.getAuthInstance();
-          auth2.signOut().then(function () {
-            console.log('User signed out.');
-          });
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function() {
+                console.log('User signed out.');
+            });
         }
-      </script>
+    </script>
 
 </body>
 
