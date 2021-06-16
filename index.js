@@ -38,6 +38,93 @@ app.get('/user', (req, res) => {
     })();
 })
 
+app.get("/popularSubReddit", (req, res) => {
+    (async() => {
+        var params = {
+            TableName: "SmartFeed"
+        }
+        var result = await dynamoDB.scan(params).promise()
+        var reddit_subs = [];
+        result.Items.forEach(element => {
+            if(element.media == "reddit"){
+                reddit_subs.push(element.sub);
+            }
+        })
+        res.send(mode(reddit_subs))
+    })();
+})
+
+app.get("/popularSubYoutube", (req, res) => {
+    (async() => {
+        var params = {
+            TableName: "SmartFeed"
+        }
+        var result = await dynamoDB.scan(params).promise()
+        var reddit_subs = [];
+        result.Items.forEach(element => {
+            if(element.media == "youtube"){
+                reddit_subs.push(element.sub);
+            }
+        })
+        console.log(reddit_subs)
+        res.send(mode(reddit_subs))
+    })();
+})
+
+app.get("/popularSubTwitter", (req, res) => {
+    (async() => {
+        var params = {
+            TableName: "SmartFeed"
+        }
+        var result = await dynamoDB.scan(params).promise()
+        var reddit_subs = [];
+        result.Items.forEach(element => {
+            if(element.media == "twitter"){
+                reddit_subs.push(element.sub);
+            }
+        })
+        res.send(mode(reddit_subs))
+    })();
+})
+
+app.get("/popularSubTwitch", (req, res) => {
+    (async() => {
+        var params = {
+            TableName: "SmartFeed"
+        }
+        var result = await dynamoDB.scan(params).promise()
+        var reddit_subs = [];
+        result.Items.forEach(element => {
+            if(element.media == "twitch"){
+                reddit_subs.push(element.sub);
+            }
+        })
+        res.send(mode(reddit_subs))
+    })();
+})
+
+function mode(array)
+{
+    if(array.length == 0)
+        return null;
+    var modeMap = {};
+    var maxEl = array[0], maxCount = 1;
+    for(var i = 0; i < array.length; i++)
+    {
+        var el = array[i];
+        if(modeMap[el] == null)
+            modeMap[el] = 1;
+        else
+            modeMap[el]++;  
+        if(modeMap[el] > maxCount)
+        {
+            maxEl = el;
+            maxCount = modeMap[el];
+        }
+    }
+    return maxEl;
+}
+
 async function putJsonDynamoDB(json) {
     var name = json["name"];
     var user_id = json["user_id"];
